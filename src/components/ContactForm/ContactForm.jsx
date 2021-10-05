@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { v4 as uuidv4 } from 'uuid';
 import Form from './ContactForm.styled';
+import { addContact } from '../../redux/contacts/contacts-actions';
+import { availabilityСheck } from '../../utils/utils';
 
-const ContactForm = ({ availabilityСheck, contactAdding }) => {
+const ContactForm = ({ contacts, contactAdding }) => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
@@ -11,11 +13,9 @@ const ContactForm = ({ availabilityСheck, contactAdding }) => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    if (availabilityСheck(name) || !name || !number) {
-      return;
-    }
-
-    contactAdding({ id: uuidv4(), name, number });
+    if (availabilityСheck(contacts,name) || !name || !number) return;
+   
+    contactAdding({ name, number });
     setName('');
     setNumber('');
   };
@@ -28,11 +28,11 @@ const ContactForm = ({ availabilityСheck, contactAdding }) => {
       case 'name':
         setName(e.target.value.trim());
         break;
-
+      
       case 'number':
         setNumber(e.target.value.trim());
         break;
-
+      
       default:
         console.log('Oops! Something Went Wrong');
     }
@@ -69,10 +69,15 @@ const ContactForm = ({ availabilityСheck, contactAdding }) => {
   );
 };
 
-export default ContactForm;
+const mapStateToProps = state => ({ contacts: state.contacts.items });
+
+const mapDispatchToProps = dispatch => ({  
+    contactAdding: contact => dispatch(addContact(contact))
+});
+
+export default connect(mapStateToProps,mapDispatchToProps)(ContactForm);
 
 ContactForm.propTypes = {
-  // handleChange: PropTypes.func.isRequired,
-  availabilityСheck: PropTypes.func.isRequired,
+  contacts: PropTypes.array.isRequired,
   contactAdding: PropTypes.func.isRequired,
 };
