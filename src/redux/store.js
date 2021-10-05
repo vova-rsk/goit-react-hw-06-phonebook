@@ -1,9 +1,6 @@
-import { createStore, combineReducers } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { configureStore } from '@reduxjs/toolkit';
 import contactsReducer from './contacts/contacts-reducer';
 import { getDataFromLocalStorage } from '../utils/utils';
-
-const rootReducer = combineReducers({ contacts: contactsReducer });
 
 const getPreloadedState = () => ({
   contacts: {
@@ -12,10 +9,10 @@ const getPreloadedState = () => ({
   },
 });
 
-const store = createStore(
-  rootReducer,
-  getPreloadedState(),
-  composeWithDevTools(),
-);
+const store = configureStore({
+  reducer: { contacts: contactsReducer },
+  devTools: true,
+  preloadedState: getPreloadedState(),
+});
 
 export default store;
