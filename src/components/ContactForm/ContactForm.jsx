@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { connect } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 import Form from './ContactForm.styled';
+import { getItems } from '../../redux/contacts/counter-selectors';
 import { addContact } from '../../redux/contacts/contacts-actions';
 import { availabilityСheck } from '../../utils/utils';
 
-const ContactForm = ({ contacts, contactAdding }) => {
+const ContactForm = () => {
+  const contacts = useSelector(getItems);
+  const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
@@ -15,7 +17,7 @@ const ContactForm = ({ contacts, contactAdding }) => {
 
     if (availabilityСheck(contacts,name) || !name || !number) return;
    
-    contactAdding({ name, number });
+    dispatch(addContact({ name, number }));
     setName('');
     setNumber('');
   };
@@ -69,15 +71,5 @@ const ContactForm = ({ contacts, contactAdding }) => {
   );
 };
 
-const mapStateToProps = state => ({ contacts: state.contacts.items });
+export default ContactForm;
 
-const mapDispatchToProps = dispatch => ({  
-    contactAdding: contact => dispatch(addContact(contact))
-});
-
-export default connect(mapStateToProps,mapDispatchToProps)(ContactForm);
-
-ContactForm.propTypes = {
-  contacts: PropTypes.array.isRequired,
-  contactAdding: PropTypes.func.isRequired,
-};
